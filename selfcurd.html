@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>new crud</title>
+</head>
+
+<body>
+    <h1> crud parctice</h1>
+    <div>
+        <table>
+            <input type="hidden" id="id">
+            <tr>
+                <td>
+                    <label> Name </label>
+                    <input type="text" id="name" placeholder="name">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label> password </label>
+                    <input type="text" id="password" placeholder="password">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="button" value="submit" onclick="Save()">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <table border="1" cellpadding="10px">
+            <input type="text" id="inputdata" placeholder="Search..." onkeyup="searchdata()"
+            <tr>
+                <th>Name</th>
+                <th>Password</th>
+                <th>Action</th>
+            </tr>
+
+            <tbody id="record"> </tbody>
+        </table>
+    </div>
+
+
+    <script>
+        let data = [];
+
+        const Save = () => {
+            let name = document.getElementById('name').value;
+            let password = document.getElementById('password').value;
+            let editid = document.getElementById('id').value;
+            let id = Math.floor(Math.random()*1000);
+
+            let obj = {
+                uid : id,
+                uname : name,
+                upassword : password,
+            }
+            if(!name || !password ){
+                alert('Enter Required Field');
+                return false;
+            }
+
+           if(editid){
+             let allRecord = JSON.parse(localStorage.getItem('new'));
+             let newedit =  allRecord.map((item)=>{
+                if(item.uid == editid){
+                    item.uname = name;
+                    item.upassword = password;
+                }
+                return item;
+             });
+             localStorage.setItem('new',JSON.stringify(newedit));
+             document.getElementById('id').value = '';
+             document.getElementById('name').value = '';
+             document.getElementById('password').value = '';
+
+             view();
+           }
+           else {
+            if(localStorage.getItem('new')==null || localStorage.getItem('new')==undefined){
+                data.push(obj);
+                localStorage.setItem('new',JSON.stringify(data));
+            } else {
+                let allRecord = JSON.parse(localStorage.getItem('new'));
+                allRecord.push(obj);
+                localStorage.setItem('new',JSON.stringify(allRecord));
+            }
+            document.getElementById('name').value = '';
+            document.getElementById('password').value = '';
+            view();
+           }
+        }
+
+        const view = () => {
+            let tbl='';
+            let allRecord = JSON.parse(localStorage.getItem('new'));
+            allRecord.map((item)=>{
+                tbl += `
+                    <tr>
+                        <td>${item.uname}</td>
+                        <td>${item.upassword}</td>
+                        <td><input type="button" value="delete" onclick="Delete(${item.uid})")"></td>
+                        <td><input type="button" value="Edit" onclick="Edit(${item.uid})")"></td>
+                    </tr>
+                `
+            });
+            document.getElementById('record').innerHTML = tbl;
+        }
+        view();
+
+        const Delete = (id) => {
+            let allRecord = JSON.parse(localStorage.getItem('new'));
+            let del = allRecord.filter((item)=>{
+                return item.uid != id;
+            });
+            localStorage.setItem('new',JSON.stringify(del));
+            view();
+        }
+
+        const Edit = (id) => {
+            let allRecord= JSON.parse(localStorage.getItem('new'));
+            let Editrec = allRecord.filter((item)=> {
+                return item.uid==id});
+                document.getElementById('id').value = Editrec.uid;
+                document.getElementById('name').value = Editrec.uname;
+                document.getElementById('password').value = Editrec.upassword;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // const Edit = (id) =>{
+        //     let allRecord = JSON.parse(localStorage.getItem('new'));
+        //     let edit = allRecord.find((item)=>{
+        //        return item.uid == id;
+        //     });
+        
+        //   document.getElementById('id').value = edit.uid;
+        //   document.getElementById('name').value = edit.uname;
+        //   document.getElementById('password').value = edit.upassword;
+        // }
+        
+        // const displayrec = (record) => {
+        //     let tbl = '';
+        //     if(record.length > 0){
+        //         record.map((item)=> {
+        //             tbl += `
+        //             <tr>
+        //                  <td>${item.uname}</td>
+        //                  <td>${item.upassword}</td>
+        //                  <td><input type="button" value="delete" onclick="Delete(${item.uid})")"></td>
+        //                  <td><input type="button" value="Edit" onclick="Edit(${item.uid})")"></td>
+        //             </tr> 
+        //             `
+        //         });
+        //     }
+        //     else {
+        //         alert('No Data Found.... ');
+        //     }
+        //     view();
+        //     document.getElementById('record').innerHTML= tbl;
+        // }
+
+        // const searchdata = () => {
+        //     let allRecord = JSON.parse(localStorage.getItem('new'));
+        //     let serchitem = document.getElementById('inputdata').value;
+        //     let newdata = allRecord.filter((item)=> {
+        //         return item.uname.includes(serchitem)
+        //         return item.upassword.includes(serchitem)
+        //     })
+
+        //     displayrec(newdata);
+        // }
+
+
+
+
+
+        // const displayrec = (record) => {
+        //     let tbl='';
+        //     if(record.length > 0){
+        //         record.map((item)=>{
+        //             tbl += `
+        //             <tr>
+        //                 <td>${item.uname}</td>
+        //                 <td>${item.upassword}</td>
+        //                 <td><input type="button" value="delete" onclick="Delete(${item.uid})")"></td>
+        //                 <td><input type="button" value="Edit" onclick="Edit(${item.uid})")"></td>
+        //             </tr>
+        //         `
+        //         })
+        //         view();
+        //     } else {
+        //         alert('data not found');
+        //     }
+        //     view();
+           
+        //     document.getElementById('record').innerHTML = tbl;
+
+        // }
+
+        // const searchdata = () => {
+        //     let SearchInput = document.getElementById('inputdata').value.toLowerCase();
+        //     let allRecord = JSON.parse(localStorage.getItem('new')) || [];
+        //     let srecord = allRecord.filter((item)=>{
+        //         return (
+        //             item.uname.toLowerCase().includes(SearchInput) ||
+        //         item.upassword.toLowerCase().includes(SearchInput)
+        //         );
+        //     });
+        //     displayrec(srecord);
+        // }
+
+       
+    </script>
+</body>
+
+</html>

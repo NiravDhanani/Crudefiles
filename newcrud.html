@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crude file</title>
+</head>
+<body>
+    <h1>Crud Revision</h1>
+    <table>
+        <tr>
+            <td>Name</td>
+            <td> <input type="text" placeholder="name" id="name" > </td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td> <input type="text" placeholder="Abc@gmail.com" id="email" > </td>
+        </tr>
+        <tr>
+            <td> </td>
+            <td> <button  onclick="Save()">Submit</button> </td>
+        </tr>
+    </table>
+    <input type="hidden" id="editid">
+    <div> 
+        <table border="1" cellpadding="10px" >
+            <tr>
+                <th>id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th colspan="">Action</th>
+            </tr>
+            <tbody id="ans"></tbody>
+        </table>
+    </div>
+    
+
+
+    <script>
+        data = [];
+        const Save = () => {
+            let name = document.getElementById('name').value;
+            let email = document.getElementById('email').value;
+            let id = Math.floor(Math.random()*1000); 
+            let editid = document.getElementById('editid').value;
+
+            let obj = {
+                uid : id,
+                uname : name,
+                uemail : email,
+            }
+            if(editid){
+                let allRecord = JSON.parse(localStorage.getItem('user'));
+                allRecord.filter((item)=>{
+                    if(item.uid == editid){
+                        item.uname = name;
+                        item.uemail = email;
+                    }
+                    return item;
+                });
+                localStorage.setItem('user',JSON.stringify(allRecord))
+            }
+            else {
+                if (localStorage.getItem('user') == null || localStorage.getItem('user') == undefined) {
+                    data.push(obj);
+                    localStorage.setItem('user', JSON.stringify(data));
+                } else {
+                    let allRecord = JSON.parse(localStorage.getItem('user'));
+                    allRecord.push(obj);
+                    localStorage.setItem('user', JSON.stringify(allRecord));
+                }
+            }
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('editid').value = '';
+            view();
+        }
+
+        const view = () => {
+            let allRecord = JSON.parse(localStorage.getItem('user'));
+            let tbl = '';
+            allRecord.map((item)=>{
+                tbl += `
+                        <tr>
+                            <td> ${item.uid} </td> 
+                            <td> ${item.uname} </td> 
+                            <td> ${item.uemail} </td> 
+                            <td> <button onclick="edit(${item.uid})">Edit</button> </td> 
+                            <td> <button onclick="dele(${item.uid})">Delete</button> </td> 
+                        </tr>  `
+            });
+            document.getElementById('ans').innerHTML = tbl;
+        }
+        view();
+
+        const edit = (id) => {
+            let allRecord = JSON.parse(localStorage.getItem('user'));
+            let newvar = allRecord.find((item)=>{
+                return item.uid == id;
+            })
+            document.getElementById('name').value=newvar.uname;
+            document.getElementById('email').value=newvar.uemail;
+            document.getElementById('editid').value=newvar.uid;
+        }
+
+        const dele = (id) => {
+           let  allRecord = JSON.parse(localStorage.getItem('user'));
+            let newrwc =  allRecord.filter((item)=>{
+                return item.uid != id;
+            })
+            localStorage.setItem('user',JSON.stringify(newrwc));
+            view();
+        }
+       
+    </script>
+</body>
+</html>
